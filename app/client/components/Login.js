@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { Form, Button } from "semantic-ui-react";
 
 class Login extends Component {
   constructor(props) {
@@ -9,15 +11,36 @@ class Login extends Component {
     };
   }
 
-  updateUsername = e => {
-    this.setState({ username: e.target.value });
-  };
-
-  updatePassword = e => {
-    this.setState({ password: e.target.value });
+  handleChange = (e, { name, value }) => {
+    this.setState({ [name]: value });
   };
 
   render() {
-    return <p>Login Page</p>;
+    const { username, password } = this.state;
+
+    return (
+      <Form>
+        <Form.Input
+          label="Username"
+          placeholder="Username"
+          name="username"
+          value={username}
+          onChange={this.handleChange}
+        />
+        <Form.Input
+          label="Password"
+          placeholder="Password"
+          name="password"
+          type="password"
+          value={password}
+          onChange={this.handleChange}
+        />
+        <Button type="submit" fluid>
+          Log In
+        </Button>
+      </Form>
+    );
   }
 }
+
+export default Login;
