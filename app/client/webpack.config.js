@@ -1,12 +1,16 @@
 const webpack = require("webpack");
 
 module.exports = {
-  entry: "./app.js",
+  entry: ["babel-polyfill", "./app.js"],
   output: {
     path: __dirname + "/build",
     filename: "app.bundle.js"
   },
   module: {
+    loaders: [
+      { test: /\.css$/, loader: "style-loader!css-loader" }
+      // ...
+    ],
     rules: [
       {
         test: /\.js$/,
@@ -14,7 +18,11 @@ module.exports = {
         use: {
           loader: "babel-loader",
           options: {
-            presets: ["@babel/preset-env", "@babel/preset-react"],
+            // presets: [["@babel/preset-env", { targets: { node: "current" }}], "@babel/preset-react"],
+            presets: [
+              ["@babel/preset-env", { modules: false, useBuiltIns: "entry" }],
+              "@babel/preset-react"
+            ],
             plugins: ["transform-class-properties"]
           }
         }
