@@ -1,10 +1,9 @@
-import mongoose from "mongoose";
+// import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  name: {
-    first: { type: String, required: true, trim: true },
-    last: { type: String, required: true, trim: true }
-  },
+  fname: { type: String, required: true, trim: true },
+  lname: { type: String, required: true, trim: true },
   username: {
     type: String,
     required: true

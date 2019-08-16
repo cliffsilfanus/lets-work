@@ -1,10 +1,7 @@
-import mongoose from "mongoose";
+// import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const taskSchema = new mongoose.Schema({
-  name: {
-    first: { type: String, required: true, trim: true },
-    last: { type: String, required: true, trim: true }
-  },
   name: { type: String, required: true },
   components: [
     {
