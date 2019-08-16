@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { BrowserRouter, Route, Link } from "react-router-dom";
-import { Menu } from "semantic-ui-react";
+import { Menu, Button } from "semantic-ui-react";
 import Home from "./Home";
 import Login from "./Login";
 import Register from "./Register";
+import Dashboard from "./Dashboard";
 
 class App extends Component {
   state = { activeItem: null };
@@ -24,6 +25,7 @@ class App extends Component {
                 onClick={this.handleItemClick}
               />
             </Link>
+            {/* <Button id="test" content="Register" color="violet" /> */}
             <Link to="/register">
               <Menu.Item
                 name="register"
@@ -36,6 +38,7 @@ class App extends Component {
         <Route exact={true} path="/" component={Home} />
         <Route exact={true} path="/login" component={Login} />
         <Route exact={true} path="/register" component={Register} />
+        <Route exact={true} path="/dashboard" component={Dashboard} />
       </BrowserRouter>
     );
   }
