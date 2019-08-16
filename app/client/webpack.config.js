@@ -4,13 +4,11 @@ module.exports = {
   entry: ["babel-polyfill", "./app.js"],
   output: {
     path: __dirname + "/build",
-    filename: "app.bundle.js"
+    filename: "app.bundle.js",
+    publicPath: "/"
   },
   module: {
-    loaders: [
-      { test: /\.css$/, loader: "style-loader!css-loader" }
-      // ...
-    ],
+    // loaders: [{ test: /\.css$/, loader: "style-loader!css-loader" }],
     rules: [
       {
         test: /\.js$/,
@@ -33,6 +31,9 @@ module.exports = {
         use: ["style-loader", "css-loader"]
       }
     ]
+  },
+  devServer: {
+    historyApiFallback: true
   },
   stats: {
     colors: true
