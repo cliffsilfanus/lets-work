@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const models = require("../models");
 const logger = require("morgan");
-const path = require("path");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
@@ -146,6 +145,14 @@ app.get("/login", (req, res) => {
   return res.json({ session: true, userId: req.session.user._id });
 });
 
+app.get("/me", async (req, res) => {
+  if (!req.session.user) {
+    return res.json({ success: false });
+  }
+  const { fname, lname, username } = req.session.user;
+  return res.json({ success: true, fname, lname, username });
+});
+
 // app.get("/dashboard", async (req, res) => {
 //   try {
 //     const user = await models.User.findById(req.session._id);
@@ -164,6 +171,60 @@ app.get("/login", (req, res) => {
 //     });
 //   }
 // });
+
+app.post("/dashboard", async (req, res) => {
+  try {
+    console.log("POST dashboard");
+    const { name, users } = req.body;
+
+    const board = new models.Board({
+      name,
+      owner: req.session.user._id,
+      users,
+      projects: []
+    });
+
+    await board.save();
+
+    return res.json({
+      success: true,
+      message: `Board "${name}" successfully created!`
+    });
+  } catch (err) {
+    console.log(`Error: ${err}`);
+    return res.json({
+      success: false,
+      message: `Something went wrong on our end! Please try again!`
+    });
+  }
+});
+
+app.get("/user/:username", async (req, res) => {
+  try {
+    // const { username } = req.body;
+    const username = req.params.username;
+    const userExists = await models.User.findOne({ username });
+
+    if (userExists) {
+      return res.json({
+        success: true,
+        userId: userExists._id,
+        message: `User ${username} exists!`
+      });
+    } else {
+      return res.json({
+        success: false,
+        message: `User ${username} does not exist!`
+      });
+    }
+  } catch (err) {
+    console.log(`Error: ${err}`);
+    return res.json({
+      success: false,
+      message: `Something went wrong on our end! Please try again!`
+    });
+  }
+});
 
 const port = process.env.PORT || 3000;
 server.listen(port, function() {
