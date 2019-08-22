@@ -12,10 +12,6 @@ import {
 class ProjectRow extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      headers: props.headers,
-      task: props.task
-    };
   }
 
   editCell = () => {
@@ -23,8 +19,9 @@ class ProjectRow extends Component {
   };
 
   render() {
-    const { headers, task } = this.state;
+    const { headers, task } = this.props;
 
+    console.log("ProjectRow render", headers, task);
     return (
       <Table.Row>
         <Popup

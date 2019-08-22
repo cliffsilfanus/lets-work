@@ -10,39 +10,40 @@ class BoardView extends Component {
 
     this.state = {
       newProject: "",
-      projects: [
-        {
-          name: "Project 1",
-          headers: ["Priority", "Status"],
-          tasks: [
-            {
-              _id: 10,
-              name: "P1 Task 1",
-              priority: "High",
-              status: "Done"
-            },
-            {
-              _id: 11,
-              name: "P1 Task 2",
-              priority: "Low",
-              status: "In Progress"
-            }
-          ]
-        },
-        {
-          name: "Project 2",
-          headers: ["People", "Priority", "Status"],
-          tasks: [
-            {
-              _id: 20,
-              name: "P2 Task 1",
-              people: ["cliffsilfanus", "x", "a"],
-              priority: "Medium",
-              status: "Stuck"
-            }
-          ]
-        }
-      ],
+      projects: [],
+      // projects: [
+      //   {
+      //     name: "Project 1",
+      //     headers: ["Priority", "Status"],
+      //     tasks: [
+      //       {
+      //         _id: 10,
+      //         name: "P1 Task 1",
+      //         priority: "High",
+      //         status: "Done"
+      //       },
+      //       {
+      //         _id: 11,
+      //         name: "P1 Task 2",
+      //         priority: "Low",
+      //         status: "In Progress"
+      //       }
+      //     ]
+      //   },
+      //   {
+      //     name: "Project 2",
+      //     headers: ["People", "Priority", "Status"],
+      //     tasks: [
+      //       {
+      //         _id: 20,
+      //         name: "P2 Task 1",
+      //         people: ["cliffsilfanus", "x", "a"],
+      //         priority: "Medium",
+      //         status: "Stuck"
+      //       }
+      //     ]
+      //   }
+      // ],
       currentlyEditingTask: null
     };
   }
@@ -51,7 +52,34 @@ class BoardView extends Component {
     this.setState({ [name]: value });
   };
 
-  addProject = () => {};
+  addProject = async () => {
+    try {
+      console.log("addProject");
+      const { newProject } = this.state;
+      const boardId = this.props.match.params.boardId;
+
+      const response = await fetch(BACKEND + "/dashboard/" + boardId, {
+        method: "POST",
+        mode: "cors",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name: newProject }),
+        redirect: "follow"
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      if (data.success) {
+        const { projects } = data;
+        this.setState({ projects });
+      }
+    } catch (err) {
+      console.log(`Error: ${err}`);
+    }
+  };
 
   edit(task) {
     this.setState({ currentlyEditingTask: tasks });
@@ -59,6 +87,27 @@ class BoardView extends Component {
 
   editCell = () => {
     console.log("editCell");
+  };
+
+  componentDidMount = async () => {
+    const boardId = this.props.match.params.boardId;
+    try {
+      const response = await fetch(BACKEND + "/dashboard/" + boardId, {
+        method: "GET",
+        mode: "cors",
+        credentials: "include"
+      });
+
+      const data = await response.json();
+
+      console.log(data);
+
+      if (data.success) {
+        this.setState({ projects: data.projects });
+      }
+    } catch (err) {
+      console.log(`Error: ${err}`);
+    }
   };
 
   render() {

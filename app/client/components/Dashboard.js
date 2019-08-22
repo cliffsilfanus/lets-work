@@ -98,21 +98,25 @@ class Dashboard extends Component {
     this.setState({ newBoardNameError: newBoardName.length === 0 });
 
     if (newBoardName.length !== 0) {
-      const response = await fetch(BACKEND + "/dashboard", {
-        method: "POST",
-        mode: "cors",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ name: newBoardName, users: invitedUsersId }),
-        redirect: "follow"
-      });
+      try {
+        const response = await fetch(BACKEND + "/dashboard", {
+          method: "POST",
+          mode: "cors",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ name: newBoardName, users: invitedUsersId }),
+          redirect: "follow"
+        });
 
-      const data = await response.json();
-      console.log(data);
+        const data = await response.json();
+        console.log(data);
 
-      this.closeBoardModal();
+        this.closeBoardModal();
+      } catch (err) {
+        console.log(`Error: ${err}`);
+      }
     }
   };
 
@@ -120,6 +124,7 @@ class Dashboard extends Component {
     try {
       const response = await fetch(BACKEND + "/dashboard", {
         method: "GET",
+        mode: "cors",
         credentials: "include"
       });
 
