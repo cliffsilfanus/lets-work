@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { Modal, List, Label, Form, Button, Icon } from "semantic-ui-react";
 import BACKEND from "./Backend";
 
@@ -17,7 +17,8 @@ class Dashboard extends Component {
       newUser: "",
       newUserError: "",
       invitedUsers: [],
-      invitedUsersId: []
+      invitedUsersId: [],
+      redirectId: ""
     };
   }
 
@@ -30,7 +31,15 @@ class Dashboard extends Component {
   };
 
   closeBoardModal = () => {
-    this.setState({ boardModal: false });
+    this.setState({
+      boardModal: false,
+      newBoardName: "",
+      newBoardNameError: false,
+      newUser: "",
+      newUserError: "",
+      invitedUsers: [],
+      invitedUsersId: []
+    });
   };
 
   addUser = async e => {
@@ -39,6 +48,8 @@ class Dashboard extends Component {
 
     // Checks if user has already been invited
     if (invitedUsers.indexOf(newUser) === -1) {
+      console.log("newUser", newUser);
+      console.log("username", username);
       if (newUser === username) {
         this.setState({ newUserError: "You don't need to invite yourself." });
       } else {
@@ -87,7 +98,6 @@ class Dashboard extends Component {
     this.setState({ newBoardNameError: newBoardName.length === 0 });
 
     if (newBoardName.length !== 0) {
-      // do owner in backend
       const response = await fetch(BACKEND + "/dashboard", {
         method: "POST",
         mode: "cors",
@@ -100,46 +110,54 @@ class Dashboard extends Component {
       });
 
       const data = await response.json();
-
       console.log(data);
 
       this.closeBoardModal();
     }
   };
 
-  /* TODO: Set state to relevant information / load it to page */
   componentDidMount = async () => {
     try {
-      const response = await fetch(BACKEND + "/me", {
+      const response = await fetch(BACKEND + "/dashboard", {
         method: "GET",
         credentials: "include"
       });
+
       const data = await response.json();
-      console.log(data);
-      const { fname, lname, username } = data;
+      const { fname, lname, username, boards } = data;
       if (data.success) {
-        this.setState({ fname, lname, username });
-      } else {
-        /* NO SESSION EXISTS */
+        this.setState({ fname, lname, username, boards });
       }
     } catch (err) {
       console.log(`Error: ${err}`);
     }
   };
 
+  redirectToBoard = redirectId => {
+    console.log("redirectToBoard", redirectId);
+    this.setState({ redirectId });
+  };
+
   render() {
     const {
+      boards,
       newBoardName,
       newUser,
       invitedUsers,
       newUserError,
-      newBoardNameError
+      newBoardNameError,
+      redirectId
     } = this.state;
+
+    console.log("BOARDS:", boards);
+
+    if (redirectId !== "") {
+      return <Redirect to={`/dashboard/${redirectId}`} />;
+    }
 
     return (
       <div>
         <button onClick={this.openBoardModal}>Create Board</button>
-
         <Modal
           open={this.state.boardModal}
           onClose={this.closeBoardModal}
@@ -192,6 +210,21 @@ class Dashboard extends Component {
             </Form>
           </Modal.Content>
         </Modal>
+        {boards.map(board => {
+          return (
+            <div
+              key={board._id}
+              onClick={() => this.redirectToBoard(board._id)}
+            >
+              {board.name}
+              <div>
+                {board.users.map(user => {
+                  return user;
+                })}
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   }
